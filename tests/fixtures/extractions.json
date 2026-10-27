@@ -1,0 +1,90 @@
+{
+  "halvorsen-motors": {
+    "entities": [
+      {"name": "Halvorsen Motors", "type": "ORGANIZATION", "description": "Electric vehicle maker headquartered in Oslo."},
+      {"name": "Fjord EV", "type": "PRODUCT", "description": "Halvorsen's best-selling mid-size electric crossover."},
+      {"name": "Kestrel Energy", "type": "ORGANIZATION", "description": "Supplies battery packs for the Fjord EV."},
+      {"name": "Erik Halvorsen", "type": "PERSON", "description": "Founder and CEO of Halvorsen Motors."},
+      {"name": "Brightwater Robotics", "type": "ORGANIZATION", "description": "Warehouse robot start-up acquired in 2023."},
+      {"name": "Solberg Automotive", "type": "ORGANIZATION", "description": "Main Nordic competitor."}
+    ],
+    "relationships": [
+      {"source": "Halvorsen Motors", "target": "Fjord EV", "type": "manufactures", "description": "Halvorsen builds the Fjord EV in Drammen.", "strength": 9},
+      {"source": "Kestrel Energy", "target": "Halvorsen Motors", "type": "supplies", "description": "Kestrel supplies battery packs for every Fjord EV since 2019.", "strength": 9},
+      {"source": "Erik Halvorsen", "target": "Halvorsen Motors", "type": "founded", "description": "Founded the company in 2014 and is CEO.", "strength": 7},
+      {"source": "Halvorsen Motors", "target": "Brightwater Robotics", "type": "acquired", "description": "Acquired Brightwater in 2023.", "strength": 8},
+      {"source": "Solberg Automotive", "target": "Halvorsen Motors", "type": "competes_with", "description": "Rival crossover launched in 2024.", "strength": 4}
+    ]
+  },
+  "kestrel-energy": {
+    "entities": [
+      {"name": "Kestrel Energy", "type": "ORGANIZATION", "description": "Assembles lithium-ion battery packs in Gdansk."},
+      {"name": "Ardent Cells", "type": "ORGANIZATION", "description": "South Korean cell maker supplying most of Kestrel's cells."},
+      {"name": "Halvorsen Motors, Inc.", "type": "ORGANIZATION", "description": "One of Kestrel's two largest customers."},
+      {"name": "Torvik Marine", "type": "ORGANIZATION", "description": "Uses Kestrel packs in electric ferries."},
+      {"name": "Marta Nowak", "type": "PERSON", "description": "Kestrel's CTO."}
+    ],
+    "relationships": [
+      {"source": "Ardent Cells", "target": "Kestrel Energy", "type": "supplies", "description": "Ardent supplies battery cells to Kestrel under a 2020 agreement.", "strength": 9},
+      {"source": "Kestrel Energy", "target": "Halvorsen Motors, Inc.", "type": "supplies", "description": "Packs for the Fjord EV.", "strength": 8},
+      {"source": "Kestrel Energy", "target": "Torvik Marine", "type": "supplies", "description": "Packs for electric ferries.", "strength": 8},
+      {"source": "Marta Nowak", "target": "Kestrel Energy", "type": "works_for", "description": "Leads battery management software.", "strength": 5}
+    ]
+  },
+  "fjord-ev-recall": {
+    "entities": [
+      {"name": "Fjord EV Recall", "type": "EVENT", "description": "March 2024 recall of 12,000 Fjord EVs for overheating packs."},
+      {"name": "Fjord EV", "type": "PRODUCT", "description": "Vehicle affected by the 2024 recall."},
+      {"name": "European Vehicle Safety Agency", "type": "ORGANIZATION", "description": "Investigated the recall."},
+      {"name": "Ines Kovac", "type": "PERSON", "description": "Lead investigator who traced the fault to defective separator film."},
+      {"name": "Ardent Cells", "type": "ORGANIZATION", "description": "Made the defective cells."},
+      {"name": "Kestrel Energy", "type": "ORGANIZATION", "description": "Built the affected packs and replaced them."}
+    ],
+    "relationships": [
+      {"source": "Fjord EV Recall", "target": "Fjord EV", "type": "affected", "description": "12,000 vehicles recalled.", "strength": 9},
+      {"source": "European Vehicle Safety Agency", "target": "Fjord EV Recall", "type": "investigated", "description": "Opened an investigation and published a report in August 2024.", "strength": 8},
+      {"source": "Ines Kovac", "target": "European Vehicle Safety Agency", "type": "works_for", "description": "Lead investigator.", "strength": 6},
+      {"source": "Ardent Cells", "target": "Fjord EV Recall", "type": "caused", "description": "Cells from one batch had defective separator film.", "strength": 9},
+      {"source": "Kestrel Energy", "target": "Fjord EV Recall", "type": "involved_in", "description": "Built the affected packs and replaced them at no cost.", "strength": 7}
+    ]
+  },
+  "ardent-cells": {
+    "entities": [
+      {"name": "Ardent Cells", "type": "ORGANIZATION", "description": "Battery cell maker in Busan led by Park Ji-ho."},
+      {"name": "Park Ji-ho", "type": "PERSON", "description": "CEO of Ardent Cells."},
+      {"name": "Lumen Polymers", "type": "ORGANIZATION", "description": "Osaka materials company supplying separator film."},
+      {"name": "Vesta Materials", "type": "ORGANIZATION", "description": "Second separator film supplier."}
+    ],
+    "relationships": [
+      {"source": "Park Ji-ho", "target": "Ardent Cells", "type": "leads", "description": "Chief executive.", "strength": 6},
+      {"source": "Lumen Polymers", "target": "Ardent Cells", "type": "supplies", "description": "Supplies separator film; a malfunctioning coating machine produced the defective film.", "strength": 9},
+      {"source": "Vesta Materials", "target": "Ardent Cells", "type": "supplies", "description": "Second film supplier added after the recall.", "strength": 5}
+    ]
+  },
+  "torvik-marine": {
+    "entities": [
+      {"name": "Torvik Marine", "type": "ORGANIZATION", "description": "Builds battery-electric ferries in Bergen."},
+      {"name": "Torvik 40", "type": "PRODUCT", "description": "300-passenger electric ferry."},
+      {"name": "Kestrel Energy", "type": "ORGANIZATION", "description": "Supplies packs for every Torvik 40."},
+      {"name": "Nordlys Invest", "type": "ORGANIZATION", "description": "Oslo fund that partly owns Torvik."}
+    ],
+    "relationships": [
+      {"source": "Torvik Marine", "target": "Torvik 40", "type": "manufactures", "description": "Builds the Torvik 40 ferry.", "strength": 8},
+      {"source": "Kestrel Energy", "target": "Torvik Marine", "type": "supplies", "description": "All Torvik 40 ferries use Kestrel packs; two were replaced after the report.", "strength": 8},
+      {"source": "Nordlys Invest", "target": "Torvik Marine", "type": "owns_stake_in", "description": "Partly owns Torvik.", "strength": 5}
+    ]
+  },
+  "brightwater-robotics": {
+    "entities": [
+      {"name": "Brightwater Robotics", "type": "ORGANIZATION", "description": "Designs autonomous warehouse robots."},
+      {"name": "Sofie Lund", "type": "PERSON", "description": "Founder of Brightwater."},
+      {"name": "Nordlys Logistics", "type": "ORGANIZATION", "description": "Runs 120 Brightwater robots in Sweden."},
+      {"name": "Polaris Vision", "type": "ORGANIZATION", "description": "Licenses navigation software to Brightwater."}
+    ],
+    "relationships": [
+      {"source": "Sofie Lund", "target": "Brightwater Robotics", "type": "founded", "description": "Founded in Trondheim in 2018.", "strength": 6},
+      {"source": "Nordlys Logistics", "target": "Brightwater Robotics", "type": "customer_of", "description": "Main external customer; co-developed a pallet robot.", "strength": 8},
+      {"source": "Polaris Vision", "target": "Brightwater Robotics", "type": "licenses_to", "description": "Navigation software.", "strength": 6}
+    ]
+  }
+}
