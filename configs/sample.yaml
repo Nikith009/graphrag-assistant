@@ -1,0 +1,32 @@
+corpus: data/sample
+index_path: index/sample-graph.json
+
+chunking:
+  size: 250
+  overlap: 40
+
+models:
+  extraction: claude-haiku-5-5
+  summaries: claude-haiku-5-5
+  answers: claude-sonnet-5-5
+
+communities:
+  algorithm: leiden      # leiden | louvain
+  resolution: 1.0
+  min_size: 2
+
+embedder:
+  provider: sentence-transformers   # or hashing
+  model: all-MiniLM-L6-v2
+
+local_search:
+  seed_entities: 5
+  hops: 2
+  hop_decay: 0.6
+  max_entities: 15
+  max_chunks: 6
+
+neo4j:
+  uri: bolt://localhost:7687
+  user: neo4j
+  password_env: NEO4J_PASSWORD
