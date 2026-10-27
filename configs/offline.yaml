@@ -1,0 +1,11 @@
+# No API key, no model downloads: replay saved extractions and inspect retrieval.
+#   kgrag index -c configs/offline.yaml --replay data/sample-extractions.json
+#   kgrag query -c configs/offline.yaml "..." --context-only
+corpus: data/sample
+index_path: index/offline-graph.json
+
+communities:
+  algorithm: leiden
+
+embedder:
+  provider: hashing

@@ -44,12 +44,15 @@ def _load_graph(cfg: Config, from_neo4j: bool) -> KnowledgeGraph:
 
 
 def cmd_index(cfg: Config, args) -> int:
-    graph = build_index(
-        cfg,
-        extract_llm=Claude(cfg.models.extraction, cfg.cache_dir),
-        report_llm=Claude(cfg.models.summaries, cfg.cache_dir),
-        workers=args.workers,
-    )
+    if args.replay:
+        # offline: saved extractions, no community reports
+        from .replay import ReplayExtractor
+
+        extract_llm, report_llm = ReplayExtractor(args.replay), None
+    else:
+        extract_llm = Claude(cfg.models.extraction, cfg.cache_dir)
+        report_llm = Claude(cfg.models.summaries, cfg.cache_dir)
+    graph = build_index(cfg, extract_llm, report_llm, workers=args.workers)
     graph.save(cfg.index_path)
     print(f"index written to {cfg.index_path}: {graph.stats()}")
     if args.neo4j:
@@ -66,15 +69,22 @@ def cmd_index(cfg: Config, args) -> int:
 
 def cmd_query(cfg: Config, args) -> int:
     graph = _load_graph(cfg, args.neo4j)
-    llm = Claude(cfg.models.answers, cfg.cache_dir)
-    if args.mode == "global":
-        result = GlobalSearch(graph, llm).search(args.question)
+    if args.context_only:
+        if args.mode == "global":
+            raise SystemExit("global search needs a model; drop --context-only")
+        searcher = LocalSearch(graph, build_embedder(cfg.embedder), None, cfg.local_search)
+        result = searcher.gather(args.question)
     else:
-        searcher = LocalSearch(graph, build_embedder(cfg.embedder), llm, cfg.local_search)
-        result = searcher.search(args.question)
+        llm = Claude(cfg.models.answers, cfg.cache_dir)
+        if args.mode == "global":
+            result = GlobalSearch(graph, llm).search(args.question)
+        else:
+            searcher = LocalSearch(graph, build_embedder(cfg.embedder), llm, cfg.local_search)
+            result = searcher.search(args.question)
 
-    print(result.answer)
-    if args.show_context:
+    if result.answer:
+        print(result.answer)
+    if args.show_context or args.context_only:
         print("\n--- entities (score) ---")
         for name, score in result.entities:
             print(f"{score:6.3f}  {name}")
@@ -104,11 +114,19 @@ def main(argv: list[str] | None = None) -> int:
 
     p_index = sub.add_parser("index", help="build the graph from the corpus")
     p_index.add_argument("--workers", type=int, default=4)
+    p_index.add_argument(
+        "--replay", metavar="JSON", help="use saved extractions instead of Claude (offline)"
+    )
 
     p_query = sub.add_parser("query", help="ask a question")
     p_query.add_argument("question")
     p_query.add_argument("--mode", choices=["local", "global"], default="local")
     p_query.add_argument("--show-context", action="store_true")
+    p_query.add_argument(
+        "--context-only",
+        action="store_true",
+        help="print the retrieved graph context without calling a model",
+    )
 
     sub.add_parser("stats", help="show graph size and largest communities")
 

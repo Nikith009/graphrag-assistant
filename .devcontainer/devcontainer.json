@@ -1,0 +1,15 @@
+{
+  "name": "graphrag-assistant",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postCreateCommand": "pip install -e '.[neo4j,dev]'",
+  "forwardPorts": [7474, 7687],
+  "secrets": {
+    "ANTHROPIC_API_KEY": { "description": "Needed for extraction and answers; the offline demo runs without it." }
+  },
+  "customizations": {
+    "vscode": { "extensions": ["ms-python.python", "charliermarsh.ruff"] }
+  }
+}

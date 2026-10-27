@@ -1,8 +1,20 @@
 # graphrag-assistant
 
+[![ci](https://github.com/Nikith009/graphrag-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/Nikith009/graphrag-assistant/actions/workflows/ci.yml) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Nikith009/graphrag-assistant)
+
 Question answering over a document collection using a knowledge graph. Plain vector RAG retrieves passages that look like the question, which breaks down when the answer is spread across documents that never mention each other. This project extracts entities and relationships into a graph, groups them into communities with the Leiden algorithm, and answers questions by walking the graph across several hops before anything reaches the model.
 
 The sample corpus shows the difference. The recall report names Halvorsen Motors, Kestrel Energy and Ardent Cells, but never Torvik Marine. *"Which ferry companies could be affected by the Fjord EV recall?"* needs the hop recall → Kestrel Energy → Torvik Marine, which lives in a different document. Similarity search over chunks does not make that connection; graph traversal does.
+
+## Try it
+
+- **Run the tests:** [CI workflow](https://github.com/Nikith009/graphrag-assistant/actions/workflows/ci.yml) → *Run workflow*. The `neo4j` job runs the graph through a real Neo4j database.
+- **Ask your own question:** [demo workflow](https://github.com/Nikith009/graphrag-assistant/actions/workflows/demo.yml) → *Run workflow* and type a question. It indexes the sample corpus into Neo4j and prints the multi-hop context (and, with an `ANTHROPIC_API_KEY` repository secret, Claude's answer and a global-search answer) on the run page.
+- **Offline on your machine or in a [Codespace](https://codespaces.new/Nikith009/graphrag-assistant):**
+  ```bash
+  kgrag index -c configs/offline.yaml --replay data/sample-extractions.json
+  kgrag query -c configs/offline.yaml "Which ferry companies could be affected by the Fjord EV recall?" --context-only
+  ```
 
 ## Pipeline
 

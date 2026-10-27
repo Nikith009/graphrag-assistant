@@ -8,7 +8,7 @@ from kgrag.config import Config
 from kgrag.indexer import build_index
 
 ROOT = Path(__file__).resolve().parents[1]
-EXTRACTIONS = json.loads((Path(__file__).parent / "fixtures" / "extractions.json").read_text())
+EXTRACTIONS = json.loads((ROOT / "data" / "sample-extractions.json").read_text())
 
 
 class FakeLLM:

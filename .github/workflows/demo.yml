@@ -1,0 +1,77 @@
+# Manual end-to-end run: Actions tab -> "demo" -> "Run workflow".
+# Indexes the sample corpus into a real Neo4j and answers your question.
+# With an ANTHROPIC_API_KEY repository secret it extracts with Claude and generates
+# answers; without one it replays saved extractions and shows the retrieved context.
+name: demo
+
+on:
+  workflow_dispatch:
+    inputs:
+      question:
+        description: "Question for local (multi-hop) search"
+        default: "Which ferry companies could be affected by the Fjord EV recall?"
+      global_question:
+        description: "Question for global search (needs the API key)"
+        default: "What are the main themes across these documents?"
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    services:
+      neo4j:
+        image: neo4j:5.26-community
+        env:
+          NEO4J_AUTH: neo4j/demo-password
+        ports:
+          - 7687:7687
+        options: >-
+          --health-cmd "cypher-shell -u neo4j -p demo-password 'RETURN 1'"
+          --health-interval 5s
+          --health-timeout 10s
+          --health-retries 20
+    env:
+      NEO4J_PASSWORD: demo-password
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      QUESTION: ${{ inputs.question }}
+      GLOBAL_QUESTION: ${{ inputs.global_question }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[neo4j]"
+
+      - name: Index into Neo4j
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            kgrag index -c configs/sample.yaml --neo4j -v
+            echo "CONFIG=configs/sample.yaml" >> "$GITHUB_ENV"
+          else
+            echo "::notice::ANTHROPIC_API_KEY secret not set, replaying saved extractions"
+            kgrag index -c configs/offline.yaml --replay data/sample-extractions.json --neo4j
+            echo "CONFIG=configs/offline.yaml" >> "$GITHUB_ENV"
+          fi
+
+      - name: Query
+        run: |
+          {
+            echo "## Graph"
+            echo '```'
+            kgrag stats -c "$CONFIG" --neo4j
+            echo '```'
+            echo "## Local search: $QUESTION"
+            echo '```'
+            if [ -n "$ANTHROPIC_API_KEY" ]; then
+              kgrag query -c "$CONFIG" "$QUESTION" --neo4j --show-context
+            else
+              kgrag query -c "$CONFIG" "$QUESTION" --neo4j --context-only
+            fi
+            echo '```'
+            if [ -n "$ANTHROPIC_API_KEY" ]; then
+              echo "## Global search: $GLOBAL_QUESTION"
+              echo '```'
+              kgrag query -c "$CONFIG" "$GLOBAL_QUESTION" --neo4j --mode global
+              echo '```'
+            fi
+          } | tee -a "$GITHUB_STEP_SUMMARY"
