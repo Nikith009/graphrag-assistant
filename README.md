@@ -34,6 +34,8 @@ Pruning before generation is what keeps answers grounded: the model sees around 
 
 ## Usage
 
+Requires Python 3.12+ (networkx 3.7, which ships the Leiden implementation, needs it).
+
 ```bash
 pip install -e ".[neo4j,embeddings,dev]"
 cp .env.example .env               # ANTHROPIC_API_KEY, NEO4J_PASSWORD

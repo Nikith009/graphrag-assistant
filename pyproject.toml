@@ -7,7 +7,7 @@ name = "graphrag-assistant"
 version = "0.1.0"
 description = "Question answering over documents with a knowledge graph, Leiden communities and multi-hop retrieval."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 authors = [{ name = "Veera Sai Nikith Kantipudi" }]
 license = { text = "MIT" }
 dependencies = [
@@ -34,7 +34,7 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
