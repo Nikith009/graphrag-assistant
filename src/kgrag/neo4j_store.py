@@ -150,16 +150,19 @@ class Neo4jStore:
             """
             MATCH (e:Entity)
             OPTIONAL MATCH (e)-[:MENTIONED_IN]->(c:Chunk)
-            RETURN e.id AS id, e.names AS names, e.type AS type,
+            RETURN e.id AS id, e.name AS name, e.names AS names, e.type AS type,
                    e.descriptions AS descriptions, collect(c.id) AS chunks
             """
         ):
+            # keep the stored display name as the most common surface form
+            names = Counter(rec["names"] or [])
+            names[rec["name"] or rec["id"]] += 1
             g.entities[rec["id"]] = Entity(
                 id=rec["id"],
-                names=Counter(rec["names"] or [rec["id"]]),
-                types=Counter([rec["type"] or "UNKNOWN"]),
+                names=names,
+                types=Counter([rec["type"]]) if rec["type"] != "UNKNOWN" else Counter(),
                 descriptions=rec["descriptions"] or [],
-                chunks=rec["chunks"],
+                chunks=sorted(rec["chunks"]),
             )
 
         for rec in self._run(
